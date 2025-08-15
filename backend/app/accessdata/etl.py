@@ -2,11 +2,15 @@ import csv
 
 from dataaccess import get_engine
 from datatypes import Provider
+from geolocation import get_gps_coordinates
 
+from geoalchemy2.functions import ST_MakePoint
 from sqlalchemy.orm import Session
 
 
 def import_from_csv(csv_filename: str) -> None:
+    """Import provider data from a CSV file into the database."""
+
     session = Session(bind=get_engine())
 
     with open(csv_filename, 'r', encoding='latin1') as file:
@@ -15,6 +19,13 @@ def import_from_csv(csv_filename: str) -> None:
         print(f"Header: {header}")
 
         for row in csvreader:
+            address = f"{row[3]},+{row[2]},+{row[5]},+{row[6]}"
+            latlong = get_gps_coordinates(address)
+            if not latlong:
+                print(f"Could not get GPS coordinates for address: {address}")
+                continue
+            lat, long = latlong
+
             provider = Provider(
                 provider_ccn=int(row[0]),
                 provider_org_name=row[1],
@@ -31,6 +42,7 @@ def import_from_csv(csv_filename: str) -> None:
                 avg_submited_cvrd_charge=float(row[12]),
                 avg_total_payment_amount=float(row[13]),
                 avg_mdcr_payment_amt=float(row[14]),
+                location=ST_MakePoint(lat, long),
             )
 
             session.add(provider)

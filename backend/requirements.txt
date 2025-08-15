@@ -3,3 +3,5 @@ uvicorn==0.34.0
 SQLAlchemy
 psycopg2-binary
 openai
+geoalchemy2
+requests

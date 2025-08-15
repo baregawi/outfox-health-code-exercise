@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, Float, String
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 
@@ -26,6 +27,7 @@ class Provider(MappedAsDataclass, Base):
     avg_submited_cvrd_charge = Column(Float)
     avg_total_payment_amount = Column(Float)
     avg_mdcr_payment_amt = Column(Float)
+    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=False)
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
