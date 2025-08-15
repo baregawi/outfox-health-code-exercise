@@ -1,7 +1,7 @@
 import openai
 
-from datatypes import Base, Provider
-from geolocation import get_gps_coordinates
+from .datatypes import Base, Provider
+from .geolocation import get_gps_coordinates
 
 from geoalchemy2.elements import WKTElement
 from sqlalchemy import create_engine, Engine, func
@@ -37,7 +37,7 @@ def get_engine() -> Engine:
     return engine
 
 
-class DataAccess:
+class DataAccessor:
     """Class to handle data access operations."""
 
     def __init__(self):
@@ -62,7 +62,7 @@ class DataAccess:
             point = WKTElement(f'POINT({long} {lat})', srid=4326)
             query = session.query(Provider).filter(
                 Provider.drg_cd == drg_cd,
-                Provider.location.ST_DWithin(point, radius_km * 1609.34)  # Convert miles to meters
+                Provider.location.ST_DWithin(point, radius_km * 1000)  # Convert km to meters
             )
             return query.all()
         finally:

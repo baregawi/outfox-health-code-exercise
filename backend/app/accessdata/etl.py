@@ -51,4 +51,7 @@ def import_from_csv(csv_filename: str) -> None:
     session.close()
 
 if __name__ == "__main__":
-    import_from_csv("data/MUP_INP_RY24_P03_V10_DY22_PrvSvc.csv")
+    # The location API I used is unfortunately slow so we use a reduced dataset instead.
+    # import_from_csv("data/MUP_INP_RY24_P03_V10_DY22_PrvSvc.csv")
+    import_from_csv("data/MUP_INP_RY24_P03_V10_DY22_PrvSvc_reduced.csv")
+    print("Data import completed.")
