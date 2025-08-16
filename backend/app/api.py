@@ -25,7 +25,7 @@ async def get_providers(drg_desc: Optional[str], zipcode: str, radius: float) ->
     if drg_desc:
         results = data_accessor.get_closest_providers_for_drg_desc(drg_desc, zipcode, radius)
 
-    return {"providers": [provider.to_dict() for provider in results]}
+    return {"providers": results}
 
 
 @app.post("/ask", tags=["health"])

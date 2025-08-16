@@ -5,6 +5,7 @@ from app.accessdata.geolocation import get_gps_coordinates
 
 from geoalchemy2.elements import WKTElement
 from sqlalchemy import create_engine, Engine, func
+from sqlalchemy import inspect
 from sqlalchemy.orm import sessionmaker
 
 
@@ -35,6 +36,11 @@ engine = setup_database()
 
 def get_engine() -> Engine:
     return engine
+
+
+def object_as_dict(obj):
+    """Converts a SQLAlchemy ORM object to a dictionary."""
+    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs if c.key != 'location'}
 
 
 class DataAccessor:
@@ -68,7 +74,7 @@ class DataAccessor:
         finally:
             session.close()
 
-    def get_closest_providers_for_drg_desc(self, drg_desc: str, zip_code: str, radius_km: float = 10) -> list:
+    def get_closest_providers_for_drg_desc(self, drg_desc: str, zip_code: str, radius_km: float = 10) -> list[dict]:
         """Get providers for a specific DRG code within a certain radius of a zip code."""
 
         # Heuristic for max edits based on length (up to 25% of length)
@@ -85,14 +91,14 @@ class DataAccessor:
         try:
             point = WKTElement(f'POINT({long} {lat})', srid=4326)
             query = session.query(Provider).filter(
-                func.levenshtein(Provider.drg_description, drg_desc) < max_edits,
+                Provider.drg_description.ilike(f"%{drg_desc}%"),
                 Provider.location.ST_DWithin(point, radius_km * 1000)  # Convert km to meters
             )
-            return query.all()
+            return [ object_as_dict(item) for item in query.all()]
         finally:
             session.close()
 
-    def natural_language_to_sql_sqlalchemy(self, natural_language_query, db_schema_info):
+    def natural_language_to_sql_sqlalchemy(self, natural_language_query, db_schema_info) -> str:
         prompt = f"""
         You are an assistant that translates natural language questions into SQL queries for a database with the following schema:
         {db_schema_info}
@@ -107,10 +113,10 @@ class DataAccessor:
             max_tokens=200,
             temperature=0
         )
-        generated_sql = response.choices[0].text.strip()
+        generated_sql: str = response.choices[0].text.strip()
         return generated_sql
 
-    def execute_natural_language_query(self, natural_language_query: str) -> list:
+    def execute_natural_language_query(self, natural_language_query: str) -> list[dict]:
         """Execute a natural language query against the database."""
 
         db_schema_info = Provider.__table__.schema
@@ -119,7 +125,7 @@ class DataAccessor:
         session = self._get_session()
         try:
             result = session.execute(sql_query)
-            return result.fetchall()
+            return [ object_as_dict(item) for item in result.fetchall()]
         except Exception as e:
             print(f"Error executing query: {e}")
             return []
