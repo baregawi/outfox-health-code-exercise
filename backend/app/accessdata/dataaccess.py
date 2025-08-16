@@ -107,8 +107,8 @@ class DataAccessor:
         "{natural_language_query}"
         """
 
-        response = openai.Completion.create(
-            model="text-davinci-003", # Or a more recent model like gpt-4
+        response = openai.completions.create(
+            model="gpt-3.5-turbo-instruct", # Or a more recent model like gpt-4
             prompt=prompt,
             max_tokens=200,
             temperature=0

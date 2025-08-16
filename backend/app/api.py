@@ -28,7 +28,7 @@ async def get_providers(drg_desc: Optional[str], zipcode: str, radius: float) ->
     return {"providers": results}
 
 
-@app.post("/ask", tags=["health"])
+@app.get("/ask", tags=["health"])
 async def ask_question(question: str) -> dict:
     """Endpoint to handle questions about healthcare providers."""
 
