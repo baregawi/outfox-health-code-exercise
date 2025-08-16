@@ -1,7 +1,7 @@
 import openai
 
-from .datatypes import Base, Provider
-from .geolocation import get_gps_coordinates
+from app.accessdata.datatypes import Base, Provider
+from app.accessdata.geolocation import get_gps_coordinates
 
 from geoalchemy2.elements import WKTElement
 from sqlalchemy import create_engine, Engine, func

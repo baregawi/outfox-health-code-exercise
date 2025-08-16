@@ -2,6 +2,7 @@ import requests
 
 from typing import Optional
 
+
 def get_gps_coordinates(address: str) -> Optional[tuple]:
     """Fetch GPS coordinates for a given address using OpenStreetMap's Nominatim API."""
 

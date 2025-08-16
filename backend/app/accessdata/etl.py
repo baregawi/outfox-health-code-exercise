@@ -1,8 +1,8 @@
 import csv
 
-from dataaccess import get_engine
-from datatypes import Provider
-from geolocation import get_gps_coordinates
+from app.accessdata.dataaccess import get_engine
+from app.accessdata.datatypes import Provider
+from app.accessdata.geolocation import get_gps_coordinates
 
 from geoalchemy2.functions import ST_MakePoint
 from sqlalchemy.orm import Session
