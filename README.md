@@ -110,3 +110,8 @@ http://0.0.0.0:8000/ask?question=Get+me+providers+with+provider+org+name+equal+t
 ```
 
 I have had issues getting the `/ask` API to produce results. But I am out of time.
+
+
+## Architectural decisions:
+
+This was a relatively small project. The biggest thing was that I've mostly been working on C/C++ and C# (Unity) lately. So there weren't really any major architectural decisions due to size. And the focus was just to move fast and get a first version done. I figured I could make things extra pretty or do extra credit work if I finished in time.
